@@ -1,7 +1,7 @@
-export interface Expense {
-    id: string;
-    description: string;
-    amount: number;
-    createdAt: string;  
-    updatedAt: string;  
-  }
+export interface creatExpenseParma {
+  id: number;
+  amount: bigint;
+  description: string;
+  createdAt: Date;
+  userId?: number; 
+}

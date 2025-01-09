@@ -1,18 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExpenseService } from './expense.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Expense } from '../entity/expense.entity';
+import { CreateExpenseDto } from './dtos/create.Expense.dto';
 
-describe('ExpenseService', () => {
-  let service: ExpenseService;
+@Injectable()
+export class ExpenseService {
+  constructor(
+    @InjectRepository(Expense)
+    private readonly expenseRepository: Repository<Expense>,
+  ) {}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ExpenseService],
-    }).compile();
-
-    service = module.get<ExpenseService>(ExpenseService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+  // Create a new expense
+  createExpense(createExpenseDto: CreateExpenseDto): Promise<Expense> {
+    const expense = this.expenseRepository.create({
+      ...createExpenseDto,
+      amount: BigInt(createExpenseDto.amount), // Convert number to bigint
+    });
+    return this.expenseRepository.save(expense); // Returns a single Expense
+  }
+}

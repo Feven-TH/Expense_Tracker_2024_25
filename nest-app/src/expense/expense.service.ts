@@ -1,81 +1,48 @@
-import { Injectable, NotFoundException  } from '@nestjs/common';
-import { CreateExpenseDto, UpdateExpenseDto } from './expense.dto';
-import { Expense } from './expense.interface';
-import { v4 as uuidv4 } from 'uuid'; 
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Expense } from '../entity/expense.entity';
+import { CreateExpenseDto } from './dtos/create.Expense.dto';
+import { UpdateExpenseDto } from './dtos/updateExpense.dto';
+
 @Injectable()
 export class ExpenseService {
-  private expenses: Expense[] = [];
-
+  constructor(
+    @InjectRepository(Expense)
+    private  expenseRepository: Repository<Expense>,
+  ) {}
   // Create a new expense
-  create(createExpenseDto: CreateExpenseDto): Expense {
-    const { description, amount } = createExpenseDto;
-
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+  createExpense(createExpenseDto: CreateExpenseDto): Promise<Expense> {
+    const expense = this.expenseRepository.create(createExpenseDto);
+    return this.expenseRepository.save(expense);
+  }
+  // findall expense
+  findAllExpenses(): Promise<Expense[]> {
+    return this.expenseRepository.find();
+  }
+  // get a single expense  byid
+  findOneExpenseById(id: number): Promise<Expense | null> {
+    return this.expenseRepository.findOne({ where: { id } });
+  }
+  // update an  expense by id 
+  updateExpenseById(id: number, updateExpenseDto: UpdateExpenseDto): Promise<Expense> {
+    return this.expenseRepository.findOne({ where: { id } }).then(expense => {
+      if (!expense) {
+        throw new Error('Expense not found');
+      }
+      const updatedExpense = Object.assign(expense, updateExpenseDto);
+      return this.expenseRepository.save(updatedExpense);
     });
-
-    const newExpense: Expense = {
-      id: uuidv4(),
-      description,
-      amount,
-      createdAt: formattedDate, 
-      updatedAt: formattedDate, 
-    };
-
-    this.expenses.push(newExpense);
-    return newExpense;
   }
-
-  // Get all expenses
-  findAll(): Expense[] {
-    return this.expenses;
-  }
-
-  // Get a single expense by ID
-  findOne(id: string): Expense {
-    const expense = this.expenses.find(exp => exp.id === id);
-    if (!expense) {
-      throw new Error('Expense not found');
-    }
-    return expense;
+  // delete expense by id
+  deleteExpenseById(id: number): Promise<void> {
+    return this.expenseRepository.delete(id).then(() => undefined);
   }
   
-  //Update Expense by ID
-  update(id: string, updateExpenseDto: UpdateExpenseDto): Expense | null {
-    const expenseIndex = this.expenses.findIndex((expense) => expense.id === id);
   
-    if (expenseIndex === -1) {
-      return null;
-    }
   
-    const existingExpense = this.expenses[expenseIndex];
-  
-    const updatedExpense: Expense = {
-      ...existingExpense,
-      ...updateExpenseDto,
-      updatedAt: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-    };
-  
-    this.expenses[expenseIndex] = updatedExpense; 
-    return updatedExpense;
-  }
-  
-   // Delete an expense by id
-   delete(id: string): void {
-    const expenseIndex = this.expenses.findIndex((expense) => expense.id === id);
-
-    if (expenseIndex === -1) {
-      throw new NotFoundException(`Expense with id ${id} not found`);
-    }
-
-    this.expenses.splice(expenseIndex, 1); 
-  }
-
 }
+
+
+
+

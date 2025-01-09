@@ -1,50 +1,39 @@
-import { Controller, Get, Post, Patch, Param, Body, Delete, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body, Put, Param, Get, Delete } from '@nestjs/common';
 import { ExpenseService } from './expense.service';
-import { CreateExpenseDto, UpdateExpenseDto } from './expense.dto';
-import { ValidationPipe } from '@nestjs/common';
-
+import { CreateExpenseDto } from './dtos/create.Expense.dto';
+import { UpdateExpenseDto } from './dtos/updateExpense.dto';
+import { Expense } from 'src/entity/expense.entity';
 
 @Controller('expense')
 export class ExpenseController {
-    constructor(private readonly expenseService: ExpenseService) {}
-  
-    // For Create Route (Full Validation)
+  constructor(private  expenseService: ExpenseService) {}
+
   @Post()
-  @UsePipes(new ValidationPipe({ skipMissingProperties: false })) 
-  create(@Body() createExpenseDto: CreateExpenseDto) {
-    return this.expenseService.create(createExpenseDto);
+  createExpense(@Body() createExpenseDto: CreateExpenseDto) {
+    return this.expenseService.createExpense(createExpenseDto);
   }
-
   @Get()
-  findAll() {
-    return this.expenseService.findAll(); 
+  findAllExpenses(): Promise<Expense[]> {
+    console.log('Fetching all expenses');
+    return this.expenseService.findAllExpenses();
   }
-
-  // Get Single Expense (GET /expense/:id)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.expenseService.findOne(id); 
-    }
-
-  // For Update Route (Partial Update with Optional Fields)
-  @Patch(':id')
-  @UsePipes(new ValidationPipe({ skipMissingProperties: true })) 
-  
-  update(@Param('id') id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
-    const updatedExpense = this.expenseService.update(id, updateExpenseDto);
-    if (!updatedExpense) {
-      return {
-        message: `Expense with id ${id} not found.`,
-        statusCode: 404,
-      };
-    }
-    return updatedExpense;
+  findOneExpenseById(@Param('id') id: number): Promise<Expense | null> {
+    return this.expenseService.findOneExpenseById(id);
   }
-
-  // Delete route
+  @Put(':id')
+  updateExpenseById(
+    @Param('id') id: string,
+    @Body() updateExpenseDto: UpdateExpenseDto,
+  ): Promise<Expense> {
+    return this.expenseService.updateExpenseById(Number(id), updateExpenseDto).then(updatedExpense => {
+      return updatedExpense; 
+    });
+  }
   @Delete(':id')
-  delete(@Param('id') id: string): void {
-    return this.expenseService.delete(id);
+  deleteExpenseById(@Param('id') id: number): Promise<void> {
+    return this.expenseService.deleteExpenseById(id);
   }
+
 }
 
