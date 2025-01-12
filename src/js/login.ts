@@ -1,32 +1,43 @@
+import { loginApi } from './api/auth'; // Import the API
 
-function handleLogin(event: Event): void {
-    event.preventDefault();
+class Login {
+    private loginForm: HTMLFormElement | null;
 
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    const messageDiv = document.getElementById('message') as HTMLDivElement;
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
-
-    if (!email || !password) {
-        messageDiv.textContent = 'Please fill in both fields.';
-        messageDiv.style.color = 'red'; 
-        return;
+    constructor() {
+        this.loginForm = document.getElementById('loginForm') as HTMLFormElement | null;
+        if (this.loginForm) {
+            this.addEventListeners();
+        }
     }
 
- 
-    console.log('Email:', email);
-    console.log('Password:', password);
+    private addEventListeners(): void {
+        this.loginForm?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await this.handleLogin();
+        });
+    }
 
+    private async handleLogin(): Promise<void> {
+        const emailInput = document.getElementById('email') as HTMLInputElement;
+        const passwordInput = document.getElementById('password') as HTMLInputElement;
 
+        const email = emailInput.value;
+        const password = passwordInput.value;
+
+        if (email && password) {
+            try {
+                const response = await loginApi.login({ email, password });
+                alert('Login successful!');
+                window.location.href = '/dashboard.html'; // Adjust the path as needed
+            } catch (error) {
+                alert('Login failed. Please check your credentials.');
+            }
+        } else {
+            alert('Please fill in all fields.');
+        }
+    }
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', handleLogin);
-    }
+    new Login();
 });
