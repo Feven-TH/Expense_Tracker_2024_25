@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Expense</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="index.html">
+</head>
+
+
+<body class="d-flex flex-column vh-100 bg-success bg-opacity-10">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="home.html">Expense Tracker</a>
+                
+                <div  id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Back to Expense Tracker</a>
+                        </li>
+                    </ul>
+
+                </div>
+                
+            </div>
+        </nav>
+    <div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+        <div class="mt-3">
+            <h3 class="mb-3">Update Expense:</h3>
+            <form action="/update-expense" id="updateExpenseForm">
+                <div class="col-10 col-sm-8 col-md-6 mb-4">
+                    <label for="selectExpense" class="form-label">Select Expense:</label>
+
+                        <select name="type" id="type" class="form-select form-select-sm mb-4">
+                            <option value="">-- Select --</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                </div>
+                <div class="expense-info mb-4">
+                    <div class="row mb-3">
+                        
+                        <label for="updateDescription" class="col-md-4 col-form-label fw-bold" id="description">Description:</label>
+                        <div class="col-10 col-sm-8 ">
+                            <input type="text" class="form-control" name="description" id="updateDescription"
+                                   placeholder="Where was the expense made?" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="updateDate" class="col-md-4 col-form-label fw-bold">Date:</label>
+                        <div class="col-10 col-sm-8">
+                            <input type="date" class="form-control" name="date" id="updateDate" placeholder="" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="updateAmount" class="col-md-4 col-form-label fw-bold">Amount:</label>
+                        <div class="col-10 col-sm-8">
+                            <input type="text" class="decimal form-control" name="amount" id="updateAmount"
+                                   placeholder="$0.00" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-warning mb-3" id="update-expense">Update Expense</button>
+            </form>
+        </div>
+    </div>
+    <footer class="text-white text-center py-3"
+    style="background-color: #343a40;">
+        <p>© 2025 Expense Tracker.</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/update.js"></script>
+
+</body>
+
+</html>
+
+        
